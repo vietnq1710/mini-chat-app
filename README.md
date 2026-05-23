@@ -15,6 +15,7 @@ Realtime chat app built with:
 - Realtime messaging
 
 ## Project Structure
+```bash
 chat_app/
 │
 ├── src/
@@ -47,6 +48,7 @@ chat_app/
 ├── .env
 ├── package.json
 └── README.md
+```
 
 ## Future Improvements
 React Frontend
