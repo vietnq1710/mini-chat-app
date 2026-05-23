@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mini Chat Test</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #messages {
+            margin-top: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Mini Chat App</h1>
+
+    <input
+        type="number"
+        id="userId"
+        placeholder="Your User ID"
+    />
+
+    <button onclick="connectSocket()">
+        Connect
+    </button>
+
+    <hr>
+
+    <input
+        type="number"
+        id="receiverId"
+        placeholder="Receiver ID"
+    />
+
+    <input
+        type="text"
+        id="message"
+        placeholder="Message"
+    />
+
+    <button onclick="sendMessage()">
+        Send Message
+    </button>
+
+    <div id="messages"></div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+    <script>
+
+        let socket;
+
+        function connectSocket() {
+
+            const userId =
+                document.getElementById("userId").value;
+
+            socket = io(
+                "http://localhost:3000",
+                {
+                    query: {
+                        userId
+                    }
+                }
+            );
+
+            socket.on("connect", () => {
+
+                console.log(
+                    "Connected:",
+                    socket.id
+                );
+
+                addMessage(
+                    `Connected as User ${userId}`
+                );
+            });
+
+            socket.on(
+        "receive_message",
+        (data) => {
+
+            const currentUserId =
+                document.getElementById("userId").value;
+
+            if (
+                String(data.senderId) === currentUserId ||
+                String(data.receiverId) === currentUserId
+            ) {
+
+                addMessage(
+                    `FROM ${data.senderId}
+                    TO ${data.receiverId}
+                    : ${data.message}`
+                    );
+                }}
+            );
+        }
+
+        function sendMessage() {
+
+            const senderId =
+                document.getElementById("userId").value;
+
+            const receiverId =
+                document.getElementById("receiverId").value;
+
+            const message =
+                document.getElementById("message").value;
+
+            socket.emit(
+                "send_message",
+                {
+                    senderId,
+                    receiverId,
+                    message
+                }
+            );
+        }
+
+        function addMessage(text) {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "message";
+
+            div.innerText = text;
+
+            document
+                .getElementById("messages")
+                .appendChild(div);
+        }
+
+    </script>
+
+</body>
+
+</html>
